@@ -1,10 +1,8 @@
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -18,11 +16,8 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.ocr.App;
 import org.ocr.Contour;
 
-
 import java.io.*;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
