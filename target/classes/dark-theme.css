@@ -1,0 +1,112 @@
+#main{
+    -fx-background-color: #181818;
+}
+
+.tab-pane *.tab-header-area *.tab-header-background{
+    -fx-background-color: #0F0F0F;
+}
+
+.tab-content-area{
+    -fx-background-color: #616161;
+
+
+}
+.tab-pane .tab:selected{
+    -fx-border-color:#7e57c2 ;
+}
+GridPane{
+    -fx-background-color: #181818;
+}
+.text-area,.text-field {
+
+    -fx-background-color: transparent, #424242, transparent, #424242;
+}
+.text-area .content,.text-field .content {
+    -fx-background-color: transparent, #424242, transparent, #424242;
+}
+
+.text-area:focused .content ,.text-field:focused .content {
+    -fx-background-color: transparent, #424242, transparent, #424242;
+}
+
+.text-area:focused ,.text-field:focused{
+    -fx-highlight-fill: #424242;
+}
+.text-area .content {
+    -fx-text-fill: #fff !important;
+    -fx-highlight-fill: #424242;
+}
+
+#stack-panel{
+    -fx-background-color: #424242;
+}
+
+.text-field{
+    -fx-background-color:#424242 ;
+    -fx-text-fill: #fff;
+}
+
+.add-button{
+
+    -fx-text-fill: #fff;
+    -fx-background-color:#b697f5 ;
+
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 5, 0.05, 1, 1);
+
+
+
+}
+.run-button{
+
+    -fx-text-fill: #fff;
+
+    -fx-background-color:#5118e5 ;
+
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255, 0.1), 5, 0.05, 3, 3);
+
+}
+
+.check-box .box{
+    -fx-background-color:#efe6fc ;
+
+
+}
+.check-box .box .mark{
+    -fx-background-color:#efe6fc ;
+}
+.check-box:selected .box .mark{
+    -fx-background-color: #7c47ef;
+}
+.theme-button{
+    -fx-background-image: url("sun.png");
+    -fx-background-color: #7e57c2;
+}
+.text-area{
+    -fx-text-fill: #fff !important;
+}
+
+.choice-box .arrow-button {
+    -fx-background-color:#5118e5 ;
+
+}
+.choice-box .label, .choice-box .text-field{
+    -fx-text-fill: #fff;
+}
+.choice-box,.choice-box .arrow,.choice-box .menu-item{
+    -fx-background-color: #424242;
+}
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color:#424242 ;
+
+}
+
+.white-background{
+    -fx-background-color:#181818;
+
+
+}
+
+choice-box .menu-item:focused,.choice-box .menu-item:hover,.choice-box .menu-item:selected{
+
+    -fx-background-color: #533d5d;
+}
