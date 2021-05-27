@@ -16,12 +16,10 @@ import java.util.Random;
 
 public class SaveData {
     private static final Logger log = LoggerFactory.getLogger(App.class);
-    public static final String TRAIN_FOLDER = System.getProperty("user.home") + "/OCR_data/train";
-    public static final String TEST_FOLDER = System.getProperty("user.home") + "/OCR_data/test";
-    public static final String CUSTOM_TRAIN_FOLDER = System.getProperty("user.home") + "/OCR_data/custom-train";
-    public static final String CUSTOM_TEST_FOLDER = System.getProperty("user.home") + "/OCR_data/custom-test";
-    public static final String CUSTOM_TRAIN_DATA_FOLDER = "D:\\ocr-test\\DatasetGenerating\\train-data";
-    public static final String CUSTOM_TEST_DATA_FOLDER = "D:\\ocr-test\\DatasetGenerating\\test-data";
+    public static final String CUSTOM_TRAIN_FOLDER = "src/main/resources/data/saved/train";
+    public static final String CUSTOM_TEST_FOLDER = "src/main/resources/data/saved/test";
+    public static final String CUSTOM_TRAIN_DATA_FOLDER = "src/main/resources/data/train";
+    public static final String CUSTOM_TEST_DATA_FOLDER = "src/main/resources/data/test";
 
 
 

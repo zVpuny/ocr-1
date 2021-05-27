@@ -128,11 +128,11 @@ public class Controller {
     public void toggleDarkMode(MouseEvent mouseEvent) {
         Node source = (Node) mouseEvent.getSource();
 
-        if (!source.getParent().getStylesheets().contains("dark-theme.css")) {
+        if (!source.getParent().getStylesheets().contains("css/dark-theme.css")) {
             source.getParent().getStylesheets().add("dark-theme.css");
 
         } else {
-            source.getParent().getStylesheets().remove("dark-theme.css");
+            source.getParent().getStylesheets().remove("css/dark-theme.css");
         }
 
 

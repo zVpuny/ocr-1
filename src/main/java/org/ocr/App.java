@@ -33,7 +33,7 @@ import static org.ocr.SaveData.CUSTOM_TRAIN_FOLDER;
 
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
-    public static final String MODEL_FOLDER = System.getProperty("user.home") + "/OCR_data/model";
+    public static final String MODEL_FOLDER = "src/main/resources/model";
 
     private static final int[] labels = new int[]{0, 1, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 2, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 3, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 4, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 5, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 6, 60, 61, 7, 8, 9};
 
@@ -48,7 +48,6 @@ public class App {
             modelFolder.mkdirs();
         }
         model.save(new File(modelFolder + "/" + modelFilename + ".zip"));
-
 
         log.info("Evaluate model...");
         Evaluation eval = model.evaluate(testSet);
