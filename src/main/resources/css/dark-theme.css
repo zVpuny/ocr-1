@@ -7,7 +7,7 @@
 }
 
 .tab-content-area{
-    -fx-background-color: #616161;
+    -fx-background-color: linear-gradient(to bottom ,#616161 70%,#181818 30%);
 
 
 }

@@ -149,7 +149,7 @@ public class Controller {
         Node source = (Node) mouseEvent.getSource();
 
         if (!source.getParent().getStylesheets().contains("css/dark-theme.css")) {
-            source.getParent().getStylesheets().add("dark-theme.css");
+            source.getParent().getStylesheets().add("css/dark-theme.css");
 
         } else {
             source.getParent().getStylesheets().remove("css/dark-theme.css");
