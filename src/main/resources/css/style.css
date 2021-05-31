@@ -39,7 +39,7 @@
 
 }
 .tab-content-area{
-    -fx-background-color: #e8e9fd;
+    -fx-background-color: linear-gradient(to bottom ,#e8e9fd 70%,#fff 30%);
 }
 GridPane{
     -fx-background-color: white;

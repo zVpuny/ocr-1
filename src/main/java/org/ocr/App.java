@@ -19,9 +19,13 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.AsyncDataSetIterator;
 import org.nd4j.linalg.dataset.ExistingMiniBatchDataSetIterator;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
+import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler;
 import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +41,21 @@ public class App {
 
     private static final int[] labels = new int[]{0, 1, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 2, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 3, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 4, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 5, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 6, 60, 61, 7, 8, 9};
 
+    public static void main(String[] args) throws Exception {
+
+
+        MultiLayerNetwork model = loadModel();
+        model.init();
+        NativeImageLoader nil = new NativeImageLoader(28,28,1);
+
+
+        INDArray image=nil.asMatrix(new File("D:\\ocr-test\\test-letter-e2.png"));
+        DataNormalization scaler = new ImagePreProcessingScaler(0,1);
+        scaler.transform(image);
+        INDArray output = model.output(image);
+        System.out.println(output);
+        System.out.println("TEST :"+ LetterMapping.getLetterOfId(labels[output.argMax().getInt(0)]));
+    }
 
     private static void trainAndEvaluateModel(int epochNum, File modelFolder, String modelFilename, DataSetIterator trainSet, DataSetIterator testSet, MultiLayerNetwork model) throws IOException {
         log.info("Train model....");
@@ -48,6 +67,7 @@ public class App {
             modelFolder.mkdirs();
         }
         model.save(new File(modelFolder + "/" + modelFilename + ".zip"));
+
 
         log.info("Evaluate model...");
         Evaluation eval = model.evaluate(testSet);

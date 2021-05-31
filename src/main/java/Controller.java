@@ -8,6 +8,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -40,14 +44,26 @@ public class Controller {
     public Spinner<Integer> epochsNoField;
     public TextField networkSavePathField;
     public TextField networkFilenameField;
+    public HBox mainHBox;
+    public HBox mainHBox2;
+    public VBox paramsVBox;
+    public VBox consoleVBox;
+    public VBox trainButtonVBox;
+    public VBox savepathButtonVBox;
+    public VBox savepathVBox;
+    public StackPane stackPane;
+    public AnchorPane mainAnchorPane;
+    public HBox bottomHBox;
 
-
+    int sceneWidth;
+    int sceneHeigth;
     public List<OcrDocument> documents = new ArrayList<>();
 
     ListIterator<OcrDocument> documentsIterator;
     private final BooleanProperty canShowPrevDocButton = new SimpleBooleanProperty(false);
     private final BooleanProperty canShowNextDocButton = new SimpleBooleanProperty(false);
     boolean wasLastClickedNextDoc = true;
+    public static final String test = "test";
 
     @FXML
     public void initialize() {
@@ -69,9 +85,13 @@ public class Controller {
         ObservableList<String> observableWeightInitializer = FXCollections.observableList(weightInitializers);
 
         weightChoiceBox.getItems().addAll(observableWeightInitializer);
-
         prevDocButton.visibleProperty().bind(canShowPrevDocButton);
         nextDocButton.visibleProperty().bind(canShowNextDocButton);
+    }
+
+    void initData(int width,int height){
+        sceneWidth = width;
+        sceneHeigth = height;
     }
 
 
@@ -210,5 +230,31 @@ public class Controller {
     private void setCanShowDocButtons() {
         canShowNextDocButton.setValue(documentsIterator.hasNext());
         canShowPrevDocButton.setValue(documentsIterator.hasPrevious());
+    }
+
+    public void setSizes() {
+        mainAnchorPane.setPrefWidth(sceneWidth);
+        mainAnchorPane.setPrefHeight(sceneHeigth);
+        srcImage.setFitHeight(sceneHeigth*0.6);
+        srcImage.setFitWidth(sceneWidth*0.3906);
+        mainHBox.setPrefWidth(sceneWidth);
+        resultText.setPrefWidth(sceneWidth*0.3906);
+        resultText.setPrefHeight(sceneHeigth*0.6);
+        mainHBox2.setPrefWidth(sceneWidth);
+        weightChoiceBox.setPrefWidth(sceneWidth*0.1171);
+        paramsVBox.setPrefWidth(sceneWidth*0.25);
+        consoleVBox.setPrefWidth(sceneWidth*0.7562);
+        consoleVBox.setPrefHeight(sceneHeigth);
+        consoleArea.setPrefHeight(sceneHeigth*0.6666);
+        trainButtonVBox.setPrefWidth(sceneWidth*0.5977);
+        savepathButtonVBox.setPrefWidth(sceneWidth*0.3031);
+        savepathVBox.setPrefWidth(sceneWidth*0.3547);
+        stackPane.setPrefWidth(sceneWidth);
+        stackPane.setPrefHeight(sceneHeigth);
+        bottomHBox.setPrefWidth(sceneWidth);
+        bottomHBox.setPrefHeight(sceneHeigth*0.25);
+
+
+        
     }
 }
