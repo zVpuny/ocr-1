@@ -43,13 +43,14 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
+         //trainNewModel("model6","src/main/resources/model",0.0005,0.01,0.9,"XAVIER",5);
 
         MultiLayerNetwork model = loadModel();
         model.init();
         NativeImageLoader nil = new NativeImageLoader(28,28,1);
 
 
-        INDArray image=nil.asMatrix(new File("D:\\ocr-test\\test-letter-e2.png"));
+        INDArray image=nil.asMatrix(new File("D:\\ocr-test\\test-letter-r2.png"));
         DataNormalization scaler = new ImagePreProcessingScaler(0,1);
         scaler.transform(image);
         INDArray output = model.output(image);
@@ -135,7 +136,7 @@ public class App {
     }
 
     public static MultiLayerNetwork loadModel() throws Exception {
-        return MultiLayerNetwork.load(new File(MODEL_FOLDER + "/model4.zip"), true);
+        return MultiLayerNetwork.load(new File(MODEL_FOLDER + "/model6.zip"), true);
     }
 
     public static String getLetter(Mat roi, MultiLayerNetwork model) throws IOException {

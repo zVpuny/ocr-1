@@ -2,6 +2,7 @@ package org.ocr;
 
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.opencv.core.*;
+import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -69,22 +70,22 @@ public class Contour {
         Mat roi = new Mat();
 
 
-        showWaitDestroy("word src",src);
+        //showWaitDestroy("word src",src);
         Imgproc.resize(src,src,new Size(0,0),2,2,Imgproc.INTER_CUBIC);
-        showWaitDestroy("word src x2",src);
+       // showWaitDestroy("word src x2",src);
 
 
 
         Mat blurred =new Mat(src.rows(),src.cols(), src.type());
         Imgproc.GaussianBlur(src,blurred,new Size(3,3),1);
         Core.addWeighted(src,2,blurred,-1,0,blurred);
-        showWaitDestroy("word blurred",blurred);
+       // showWaitDestroy("word blurred",blurred);
 
 
 
         Mat gray = new Mat(src.rows(),src.cols(), src.type());
         Imgproc.cvtColor(blurred,gray,Imgproc.COLOR_BGR2GRAY);
-        showWaitDestroy("word gray",gray);
+       // showWaitDestroy("word gray",gray);
 
         Mat binary = new Mat(src.rows(), src.cols(), src.type(), new Scalar(0));
         Imgproc.threshold(gray, binary, 170,255,Imgproc.THRESH_BINARY_INV+Imgproc.THRESH_OTSU);
@@ -96,20 +97,65 @@ public class Contour {
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Imgproc.findContours(binary,contours,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(binary,contours,hierarchy,Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+
         int padding = 0;
-        for(MatOfPoint contour: contours){
+        sortContoursByX(contours);
+
+        List<MatOfPoint> contourToDraw = new ArrayList<>() ;
+        /*for(MatOfPoint contour: contours){
+            contourToDraw.add(contour);
             Rect boundingRect = Imgproc.boundingRect(contour);
+            Mat paintedLetter = new Mat(500,500,CvType.CV_8U);
+            paintedLetter.setTo(new Scalar(0,0,0));
+            Imgproc.drawContours(paintedLetter,contours,contours.indexOf(contour),new Scalar(255,255,255),Imgproc.FILLED);
+            contourToDraw.clear();
+            showWaitDestroy("Painted letter", paintedLetter);
             if(boundingRect.height>2){
                 Rect rect = new Rect (boundingRect.x - padding, boundingRect.y - padding,boundingRect.width + (padding*2),boundingRect.height+(padding*2));
                 roi = binary.submat(rect);
                 Mat resizedRoi = new Mat();
                 resizedRoi = Contour.resize(roi);
+                showWaitDestroy("letter",resizedRoi);
                 result.append(App.getLetter(resizedRoi, model));
 
 
             }
+        }*/
+        Rect boundingRect = new Rect();
+        Rect boundingRectOfNext = new Rect();
+        for(int i =0; i<contours.size();i++){
+            boundingRect = Imgproc.boundingRect(contours.get(i));
+            if((i+1)<contours.size()){
+                 boundingRectOfNext = Imgproc.boundingRect(contours.get(i+1));
+            }
+            Mat paintedLetter = new Mat(500,500,CvType.CV_8U);
+            paintedLetter.setTo(new Scalar(0,0,0));
+            Imgproc.drawContours(paintedLetter,contours,i,new Scalar(255,255,255),Imgproc.FILLED);
+            if(boundingRectOfNext.x+boundingRectOfNext.width <= boundingRect.x+ boundingRect.width+2 && i+1<contours.size()){
+                Imgproc.drawContours(paintedLetter,contours,i+1,new Scalar(255,255,255),Imgproc.FILLED);
+                i+=1;
+            }
+            List<MatOfPoint> paintedLetterContours = new ArrayList<>();
+            Mat paintedLetterContoursHierarchy = new Mat();
+            Mat paintedLetterTemp = paintedLetter.clone();
+            Imgproc.dilate(paintedLetter,paintedLetterTemp,Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT,new Size(3,boundingRect.height/2)));
+            Imgproc.findContours(paintedLetterTemp,paintedLetterContours,paintedLetterContoursHierarchy,Imgproc.RETR_EXTERNAL,Imgproc.CHAIN_APPROX_SIMPLE);
+
+            if(paintedLetterContours.size()>0) {
+                Rect paintedLetterBoundingBox = Imgproc.boundingRect(paintedLetterContours.get(0));
+
+                paintedLetter = paintedLetter.submat(paintedLetterBoundingBox);
+            }
+
+            if(paintedLetter.width()<300 && paintedLetter.height()<300){
+                Mat resizedLetter = resize(paintedLetter);
+                showWaitDestroy("letter",resizedLetter);
+                result.append(App.getLetter(resizedLetter,model));
+            }
         }
+
+
         Scalar color = new Scalar(0,0,255);
         Imgproc.drawContours(src,contours,-1,color,1,Imgproc.LINE_8,hierarchy,
                 2,new Point());
@@ -146,18 +192,18 @@ public class Contour {
 
         Mat rotated = new Mat();
         Mat M  = Imgproc.getRotationMatrix2D(box.center,box.angle,1.0);
-        showWaitDestroy("full text src ",src);
+       // showWaitDestroy("full text src ",src);
         Imgproc.warpAffine(threshed,rotated,M,threshed.size());
-        Imgproc.warpAffine(src,src,M,src.size());
+        //Imgproc.warpAffine(src,src,M,src.size());
         showWaitDestroy("full text tilted",src);
         Mat horProj = new Mat();
-        Core.reduce(rotated,horProj,1,Core.REDUCE_AVG);
+        Core.reduce(threshed,horProj,1,Core.REDUCE_AVG); // rotated zamienione na threshed
 
         ArrayList<Integer>  ycoords = new ArrayList<>();
         int y=0;
         int count = 0;
         boolean isSpace = false;
-        for(int i=0;i<rotated.rows();++i){
+        for(int i=0;i<threshed.rows();++i){   // rotated zamienione na threshed
             if(!isSpace){
                 if(horProj.get(i,0)[0]==0){
                     isSpace=true;
@@ -178,9 +224,18 @@ public class Contour {
         }
 
         ycoords.add(src.rows()-1);
+        Mat srcCopy = src.clone();
         for(int i=0;i<ycoords.size()-1;++i){
-            Rect rect = new Rect(0,ycoords.get(i),src.cols(),ycoords.get(i+1)-ycoords.get(i));
+
+            Imgproc.line(srcCopy,new Point(0,ycoords.get(i)),new Point(src.cols(),ycoords.get(i)),new Scalar(0,255,0));
+        }
+        showWaitDestroy("src with lines",srcCopy);
+        int shift = 10;
+        for(int i=0;i<ycoords.size()-1;++i){
+            Rect rect = new Rect(0,ycoords.get(i),src.cols(),ycoords.get(i+1)-ycoords.get(i)-shift);
+
             Mat roi = src.submat(rect);
+
             result.append(cropWords(roi, model));
             result.append(System.lineSeparator());
         }
@@ -190,10 +245,10 @@ public class Contour {
     }
 
     private static void showWaitDestroy(String winname, Mat img) {
-        /*HighGui.imshow(winname, img);
+        HighGui.imshow(winname, img);
         HighGui.moveWindow(winname, 500, 0);
         HighGui.waitKey(0);
-        HighGui.destroyWindow(winname);*/
+        HighGui.destroyWindow(winname);
     }
 
     private static void sortContoursByX(List<MatOfPoint> contourList){
