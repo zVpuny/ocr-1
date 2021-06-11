@@ -133,6 +133,12 @@
             <artifactId>javafx-fxml</artifactId>
             <version>16</version>
         </dependency>
+
+        <dependency>
+            <groupId>info.debatty</groupId>
+            <artifactId>java-string-similarity</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -145,6 +151,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <executable>"C:\Program Files\AdoptOpenJDK\jdk-11.0.8.10-hotspot\bin\java.exe"</executable>
                 </configuration>
             </plugin>
 

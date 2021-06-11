@@ -54,6 +54,7 @@ public class Controller {
     public StackPane stackPane;
     public AnchorPane mainAnchorPane;
     public HBox bottomHBox;
+    public CheckBox useDictionary;
 
     int sceneWidth;
     int sceneHeigth;
@@ -99,7 +100,7 @@ public class Controller {
         int i = 0;
         for (OcrDocument document : documents) {
 
-            document.setText(Contour.cropLines(document.getImage(), FXApp.model));
+            document.setText(Contour.cropLines(document.getImage(), FXApp.model, useDictionary.isSelected()));
 
             if (savePathTextField.getText() != null) {
                 FileUtils.write(new File(savePathTextField.getText() + "/file-" + i + ".txt"), document.getText());

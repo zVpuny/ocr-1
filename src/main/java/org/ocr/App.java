@@ -1,5 +1,9 @@
 package org.ocr;
 
+
+import com.twelvemonkeys.lang.StringUtil;
+import info.debatty.java.stringsimilarity.CharacterSubstitutionInterface;
+import info.debatty.java.stringsimilarity.WeightedLevenshtein;
 import org.datavec.image.loader.NativeImageLoader;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -29,8 +33,12 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 import static org.ocr.SaveData.CUSTOM_TEST_FOLDER;
 import static org.ocr.SaveData.CUSTOM_TRAIN_FOLDER;
@@ -43,9 +51,9 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-         //trainNewModel("model6","src/main/resources/model",0.0005,0.01,0.9,"XAVIER",5);
+        //trainNewModel("model16","src/main/resources/model",0.0005,0.01,0.9,"XAVIER",5);
 
-        MultiLayerNetwork model = loadModel();
+        /*MultiLayerNetwork model = loadModel();
         model.init();
         NativeImageLoader nil = new NativeImageLoader(28,28,1);
 
@@ -55,7 +63,49 @@ public class App {
         scaler.transform(image);
         INDArray output = model.output(image);
         System.out.println(output);
-        System.out.println("TEST :"+ LetterMapping.getLetterOfId(labels[output.argMax().getInt(0)]));
+        System.out.println("TEST :"+ LetterMapping.getLetterOfId(labels[output.argMax().getInt(0)]));*/
+
+        /*final SortedDawg dictionary;
+        final Path dictionaryPath = Paths.get("D:\\ocr-test\\1976236-master\\wiki-100k.txt");
+        try (final InputStream stream = Files.newInputStream(dictionaryPath)) {
+            final Serializer serializer = new PlainTextSerializer(false);
+            dictionary = serializer.deserialize(SortedDawg.class, stream);
+        }
+
+        final ITransducer<Candidate> transducer = new TransducerBuilder()
+                .dictionary(dictionary)
+                .algorithm(Algorithm.STANDARD)
+                .defaultMaxDistance(2)
+                .includeDistance(true)
+                .build();
+
+
+        for (final String queryTerm : new String[] {"yumps", "quhgk", ""}) {
+            System.out.println(
+                    "+-------------------------------------------------------------------------------");
+            System.out.printf("| Spelling Candidates for Query Term: \"%s\"%n", queryTerm);
+            System.out.println(
+                    "+-------------------------------------------------------------------------------");
+            int distance= 0;
+            Candidate candidate = null;
+           while (Objects.isNull(candidate)){
+               candidate = transducer.transduce(queryTerm,distance).iterator().next();
+               distance++;
+           }
+            System.out.printf("| d(\"%s\", \"%s\") = [%d]%n",
+                    queryTerm,
+                    candidate.term(),
+                    candidate.distance());
+
+        }*/
+        PrintWriter out =  new PrintWriter(new OutputStreamWriter(
+                new BufferedOutputStream(new FileOutputStream("D:\\ocr-test\\dictionary.txt")), StandardCharsets.UTF_8));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("D:\\\\ocr-test\\\\1976236-master\\\\wiki-100k.txt"), StandardCharsets.UTF_8));
+        String word;
+        while ((word = br.readLine()) != null ){
+            out.println(StringUtil.toLowerCase(word));
+        }
+
     }
 
     private static void trainAndEvaluateModel(int epochNum, File modelFolder, String modelFilename, DataSetIterator trainSet, DataSetIterator testSet, MultiLayerNetwork model) throws IOException {
@@ -125,18 +175,20 @@ public class App {
                         .stride(2, 2)
                         .build())
                 .layer(new DenseLayer.Builder().activation(Activation.RELU)
-                        .nOut(500).build())
+                        .nOut(850).build())
                 .layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                         .nOut(outputNum)
                         .activation(Activation.SOFTMAX)
                         .build())
                 .setInputType(InputType.convolutionalFlat(28, 28, 1))
                 .build();
+
+
         return new MultiLayerNetwork(conf);
     }
 
     public static MultiLayerNetwork loadModel() throws Exception {
-        return MultiLayerNetwork.load(new File(MODEL_FOLDER + "/model6.zip"), true);
+        return MultiLayerNetwork.load(new File(MODEL_FOLDER + "/model16.zip"), true);
     }
 
     public static String getLetter(Mat roi, MultiLayerNetwork model) throws IOException {
