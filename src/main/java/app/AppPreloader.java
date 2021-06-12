@@ -1,3 +1,5 @@
+package app;
+
 import javafx.application.Preloader;
 import javafx.application.Preloader.StateChangeNotification.Type;
 import javafx.geometry.Pos;
@@ -12,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.FileInputStream;
+import java.util.Objects;
 
 public class AppPreloader extends Preloader {
     private Stage preloaderStage;
@@ -23,7 +26,7 @@ public class AppPreloader extends Preloader {
         StackPane loading = new StackPane();
         loading.setMaxWidth(Region.USE_PREF_SIZE);
         loading.setMaxHeight(Region.USE_PREF_SIZE);
-        loading.getChildren().add(new ImageView(new Image(new FileInputStream("target/classes/splash-screen.png"))));
+        loading.getChildren().add(new ImageView(new Image(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("splash-screen.png")))));
         ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.setStyle("-fx-progress-color: #fff");
         loading.getChildren().add(progressIndicator);

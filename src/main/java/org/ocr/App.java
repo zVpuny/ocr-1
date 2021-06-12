@@ -188,7 +188,7 @@ public class App {
     }
 
     public static MultiLayerNetwork loadModel() throws Exception {
-        return MultiLayerNetwork.load(new File(MODEL_FOLDER + "/model16.zip"), true);
+        return MultiLayerNetwork.load(new File(ClassLoader.getSystemResource("model/model16.zip").toURI()), true); //new File(MODEL_FOLDER + "/model16.zip")
     }
 
     public static String getLetter(Mat roi, MultiLayerNetwork model) throws IOException {

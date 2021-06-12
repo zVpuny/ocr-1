@@ -1,3 +1,5 @@
+package app;
+
 public class OcrDocument {
     public String image;
     public String text;

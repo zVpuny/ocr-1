@@ -1,14 +1,13 @@
+package app;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.ocr.App;
-
-import java.awt.*;
 
 public class FXApp extends Application {
     public static MultiLayerNetwork model;

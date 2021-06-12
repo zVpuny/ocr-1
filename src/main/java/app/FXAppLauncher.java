@@ -1,3 +1,5 @@
+package app;
+
 import com.sun.javafx.application.LauncherImpl;
 
 public class FXAppLauncher {
