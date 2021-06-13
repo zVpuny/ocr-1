@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Random;
 
 public class SaveData {
@@ -47,8 +48,16 @@ public class SaveData {
         DataNormalization scaler = new ImagePreProcessingScaler(0,1);
         scaler.fit(trainDataIterator);
         trainDataIterator.setPreProcessor(scaler);
+        String trainFolderPath;
+        String protocol = App.class.getResource("").getProtocol();
+        if(Objects.equals(protocol, "jar")){
+            trainFolderPath="data/saved/train-7";
+        }
+        else {
+            trainFolderPath = CUSTOM_TRAIN_FOLDER;
+        }
 
-        File trainFolder = new File(CUSTOM_TRAIN_FOLDER);
+        File trainFolder = new File(trainFolderPath);
         trainFolder.mkdirs();
 
         log.info("Saving train data to "+trainFolder.getAbsolutePath() );
@@ -88,7 +97,15 @@ public class SaveData {
         scaler.fit(testDataIterator);
         testDataIterator.setPreProcessor(scaler);
 
-        File testFolder = new File(CUSTOM_TEST_FOLDER);
+        String testFolderPath;
+        String protocol = App.class.getResource("").getProtocol();
+        if(Objects.equals(protocol, "jar")){
+            testFolderPath="data/saved/test-7";
+        }
+        else {
+            testFolderPath = CUSTOM_TEST_FOLDER;
+        }
+        File testFolder = new File(testFolderPath);
         testFolder.mkdirs();
 
         log.info("Saving test data to "+testFolder.getAbsolutePath() );

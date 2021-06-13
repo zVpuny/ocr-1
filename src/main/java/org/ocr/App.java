@@ -1,9 +1,6 @@
 package org.ocr;
 
 
-import com.twelvemonkeys.lang.StringUtil;
-import info.debatty.java.stringsimilarity.CharacterSubstitutionInterface;
-import info.debatty.java.stringsimilarity.WeightedLevenshtein;
 import org.datavec.image.loader.NativeImageLoader;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -23,21 +20,14 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.AsyncDataSetIterator;
 import org.nd4j.linalg.dataset.ExistingMiniBatchDataSetIterator;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
-import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
-import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler;
 import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import static org.ocr.SaveData.CUSTOM_TEST_FOLDER;
@@ -49,64 +39,7 @@ public class App {
 
     private static final int[] labels = new int[]{0, 1, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 2, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 3, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 4, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 5, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 6, 60, 61, 7, 8, 9};
 
-    public static void main(String[] args) throws Exception {
 
-        //trainNewModel("model16","src/main/resources/model",0.0005,0.01,0.9,"XAVIER",5);
-
-        /*MultiLayerNetwork model = loadModel();
-        model.init();
-        NativeImageLoader nil = new NativeImageLoader(28,28,1);
-
-
-        INDArray image=nil.asMatrix(new File("D:\\ocr-test\\test-letter-r2.png"));
-        DataNormalization scaler = new ImagePreProcessingScaler(0,1);
-        scaler.transform(image);
-        INDArray output = model.output(image);
-        System.out.println(output);
-        System.out.println("TEST :"+ LetterMapping.getLetterOfId(labels[output.argMax().getInt(0)]));*/
-
-        /*final SortedDawg dictionary;
-        final Path dictionaryPath = Paths.get("D:\\ocr-test\\1976236-master\\wiki-100k.txt");
-        try (final InputStream stream = Files.newInputStream(dictionaryPath)) {
-            final Serializer serializer = new PlainTextSerializer(false);
-            dictionary = serializer.deserialize(SortedDawg.class, stream);
-        }
-
-        final ITransducer<Candidate> transducer = new TransducerBuilder()
-                .dictionary(dictionary)
-                .algorithm(Algorithm.STANDARD)
-                .defaultMaxDistance(2)
-                .includeDistance(true)
-                .build();
-
-
-        for (final String queryTerm : new String[] {"yumps", "quhgk", ""}) {
-            System.out.println(
-                    "+-------------------------------------------------------------------------------");
-            System.out.printf("| Spelling Candidates for Query Term: \"%s\"%n", queryTerm);
-            System.out.println(
-                    "+-------------------------------------------------------------------------------");
-            int distance= 0;
-            Candidate candidate = null;
-           while (Objects.isNull(candidate)){
-               candidate = transducer.transduce(queryTerm,distance).iterator().next();
-               distance++;
-           }
-            System.out.printf("| d(\"%s\", \"%s\") = [%d]%n",
-                    queryTerm,
-                    candidate.term(),
-                    candidate.distance());
-
-        }*/
-        PrintWriter out =  new PrintWriter(new OutputStreamWriter(
-                new BufferedOutputStream(new FileOutputStream("D:\\ocr-test\\dictionary.txt")), StandardCharsets.UTF_8));
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("D:\\\\ocr-test\\\\1976236-master\\\\wiki-100k.txt"), StandardCharsets.UTF_8));
-        String word;
-        while ((word = br.readLine()) != null ){
-            out.println(StringUtil.toLowerCase(word));
-        }
-
-    }
 
     private static void trainAndEvaluateModel(int epochNum, File modelFolder, String modelFilename, DataSetIterator trainSet, DataSetIterator testSet, MultiLayerNetwork model) throws IOException {
         log.info("Train model....");
@@ -127,22 +60,39 @@ public class App {
 
     private static DataSetIterator loadTestingData(int batchSize) throws Exception {
         log.info("Load testing data...");
-        if (!new File(CUSTOM_TEST_FOLDER).exists()) {
+        String testFolder;
+        String protocol = App.class.getResource("").getProtocol();
+        if(Objects.equals(protocol, "jar")){
+            testFolder="data/saved/test-7";
+        }
+        else {
+            testFolder = CUSTOM_TEST_FOLDER;
+        }
+
+        if (!new File(testFolder).exists()) {
             log.info("No testing data to load. Saving testing data...");
             return SaveData.saveCustomTestData(batchSize);
         } else {
-            DataSetIterator existingTestData = new ExistingMiniBatchDataSetIterator(new File(CUSTOM_TEST_FOLDER), "custom-test-%d.bin");
+            DataSetIterator existingTestData = new ExistingMiniBatchDataSetIterator(new File(testFolder), "custom-test-%d.bin");
             return new AsyncDataSetIterator(existingTestData);
         }
     }
 
     private static DataSetIterator loadTrainingData(int batchSize) throws Exception {
         log.info("Load training data...");
-        if (!new File(CUSTOM_TRAIN_FOLDER).exists()) {
+        String trainFolder;
+        String protocol = App.class.getResource("").getProtocol();
+        if(Objects.equals(protocol, "jar")){
+            trainFolder="data/saved/train-7";
+        }
+        else {
+            trainFolder = CUSTOM_TRAIN_FOLDER;
+        }
+        if (!new File(trainFolder).exists()) {
             log.info("No training data to load. Saving training data...");
             return SaveData.saveCustomTrainData(batchSize);
         } else {
-            DataSetIterator existingTrainData = new ExistingMiniBatchDataSetIterator(new File(CUSTOM_TRAIN_FOLDER), "custom-train-%d.bin");
+            DataSetIterator existingTrainData = new ExistingMiniBatchDataSetIterator(new File(trainFolder), "custom-train-%d.bin");
             return new AsyncDataSetIterator(existingTrainData);
         }
     }
@@ -188,7 +138,12 @@ public class App {
     }
 
     public static MultiLayerNetwork loadModel() throws Exception {
-        return MultiLayerNetwork.load(new File(ClassLoader.getSystemResource("model/model16.zip").toURI()), true); //new File(MODEL_FOLDER + "/model16.zip")
+        String protocol = App.class.getResource("").getProtocol();
+        if(Objects.equals(protocol, "jar")){
+            return MultiLayerNetwork.load(new File("model/model16.zip"), true); //new File(MODEL_FOLDER + "/model16.zip")
+        } else {
+            return MultiLayerNetwork.load(new File(ClassLoader.getSystemResource("model/model16.zip").toURI()), true); //new File(MODEL_FOLDER + "/model16.zip")
+        }
     }
 
     public static String getLetter(Mat roi, MultiLayerNetwork model) throws IOException {

@@ -26,35 +26,14 @@
             <version>${dl4j-master.version}</version>
         </dependency>
 
-        <!--
-        ND4J backend: every project needs one of these. The backend defines the hardware on which network training
-        will occur. "nd4j-native-platform" is for CPUs only (for running on all operating systems).
-        -->
+
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-native</artifactId>
             <version>${dl4j-master.version}</version>
         </dependency>
 
-        <!-- CUDA: to use GPU for training (CUDA) instead of CPU, uncomment this, and remove nd4j-native-platform -->
-        <!-- Requires CUDA to be installed to use. Change the version (8.0, 9.0, 9.1) to change the CUDA version -->
-        <!--
-        <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-cuda-9.2-platform</artifactId>
-            <version>${dl4j-master.version}</version>
-        </dependency>
-        -->
 
-        <!-- Optional, but recommended: if you use CUDA, also use CuDNN. To use this, CuDNN must also be installed -->
-        <!-- See: https://deeplearning4j.konduit.ai/config/backends/config-cudnn#using-deeplearning-4-j-with-cudnn -->
-        <!--
-        <dependency>
-            <groupId>org.deeplearning4j</groupId>
-            <artifactId>deeplearning4j-cuda-9.2</artifactId>
-            <version>${dl4j-master.version}</version>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>org.deeplearning4j</groupId>
@@ -156,14 +135,7 @@
             </plugin>
 
 
-            <!--
-            Maven shade plugin configuration: this is required so that if you build a single JAR file (an "uber-jar")
-            it will contain all the required native libraries, and the backends will work correctly.
-            Used for example when running the following commants
-            mvn package
-            cd target
-            java -cp deeplearning4j-examples-1.0.0-beta-bin.jar org.deeplearning4j.LenetMnistExample
-            -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -180,6 +152,9 @@
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
+                                <exclude>model/**</exclude>
+                                <exclude>data/**</exclude>
+                                <exclude>dict/**</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -198,7 +173,9 @@
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>app.FXAppLauncher</mainClass>
+                                    <manifestEntries>
+                                        <Main-Class>app.FXAppLauncher</Main-Class>
+                                    </manifestEntries>
                                 </transformer>
                             </transformers>
                         </configuration>

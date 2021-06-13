@@ -73,11 +73,11 @@ public class Controller {
         Console console = new Console(consoleArea);
         PrintStream ps = new PrintStream(console,true);
         System.setOut(ps);
-        /*System.setErr(ps);*/
+
 
 
         List<String> weightInitializers = new ArrayList<>();
-        weightInitializers.add("ZEROS");
+        weightInitializers.add("ZERO");
         weightInitializers.add("ONES");
         weightInitializers.add("NORMAL");
         weightInitializers.add("XAVIER");

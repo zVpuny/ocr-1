@@ -13,9 +13,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.FileInputStream;
-import java.util.Objects;
-
 public class AppPreloader extends Preloader {
     private Stage preloaderStage;
 
@@ -26,7 +23,7 @@ public class AppPreloader extends Preloader {
         StackPane loading = new StackPane();
         loading.setMaxWidth(Region.USE_PREF_SIZE);
         loading.setMaxHeight(Region.USE_PREF_SIZE);
-        loading.getChildren().add(new ImageView(new Image(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("splash-screen.png")))));
+        loading.getChildren().add(new ImageView(new Image(getClass().getResourceAsStream("/splash-screen.png"))));
         ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.setStyle("-fx-progress-color: #fff");
         loading.getChildren().add(progressIndicator);
