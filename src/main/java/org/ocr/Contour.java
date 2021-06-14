@@ -6,6 +6,7 @@ import info.debatty.java.stringsimilarity.CharacterSubstitutionInterface;
 import info.debatty.java.stringsimilarity.WeightedLevenshtein;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.opencv.core.*;
+import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -59,6 +60,7 @@ public class Contour {
                 Rect rect = new Rect(boundingRect.x - padding, boundingRect.y - padding, boundingRect.width + (padding * 2), boundingRect.height + (padding * 2));
                 Mat roi = src.submat(rect);
                 Imgproc.resize(roi, roi, new Size(0, 0), 2, 2, Imgproc.INTER_CUBIC);
+                showWaitDestroy("roi",roi);
                 word = cropLetters(roi, model);
                 if (correctWord && !StringUtil.isNumber(word)) {
                     word = correctWord(StringUtil.toLowerCase(word), Character.isUpperCase(word.charAt(0)));
@@ -78,7 +80,7 @@ public class Contour {
         StringBuilder result = new StringBuilder();
         nu.pattern.OpenCV.loadLocally();
         Mat roi = new Mat();
-
+        showWaitDestroy("letter src",src);
 
 
         Imgproc.resize(src, src, new Size(0, 0), 2, 2, Imgproc.INTER_CUBIC);
@@ -97,15 +99,18 @@ public class Contour {
 
 
         Mat binary = new Mat(src.rows(), src.cols(), src.type(), new Scalar(0));
-        Imgproc.threshold(gray, binary, 0, 255, Imgproc.THRESH_BINARY_INV + Imgproc.THRESH_OTSU);
 
+        Imgproc.threshold(gray, binary, 0, 255, Imgproc.THRESH_BINARY_INV + Imgproc.THRESH_OTSU);
+        System.out.println("test");
+        showWaitDestroy("binary",binary);
 
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(binary, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-
+        System.out.println("test2");
         List<LetterContour> letterContours = new ArrayList<>();
+
         List<MatOfPoint> childContours = new ArrayList();
         LetterContour letterContour;
         for (int i = 0; i < hierarchy.cols(); i++) {
@@ -129,6 +134,7 @@ public class Contour {
         }
 
         int padding = 0;
+        System.out.println("letter contours: "+letterContours.size());
         sortLetterContoursByX(letterContours);
 
 
@@ -150,12 +156,14 @@ public class Contour {
                 i += 1;
             }
             Imgproc.drawContours(paintedLetter, contoursToDraw, -1, new Scalar(255, 255, 255), Imgproc.FILLED);
+            showWaitDestroy("painted letter",paintedLetter);
             if (Objects.nonNull(letterContours.get(i).childContour)) {
                 contoursToDraw.clear();
                 contoursToDraw.addAll(letterContours.get(i).childContour);
                 Imgproc.drawContours(paintedLetter, contoursToDraw, -1, new Scalar(0, 0, 0), Imgproc.FILLED);
             }
             contoursToDraw.clear();
+            showWaitDestroy("painted letter2 ",paintedLetter);
             List<MatOfPoint> paintedLetterContours = new ArrayList<>();
             Mat paintedLetterContoursHierarchy = new Mat();
             Mat paintedLetterTemp = paintedLetter.clone();
@@ -168,8 +176,10 @@ public class Contour {
                 paintedLetter = paintedLetter.submat(paintedLetterBoundingBox);
             }
 
-            if (paintedLetter.width() < 450 && paintedLetter.height() < 450) {
+
+            if (paintedLetter.width() < 1500 && paintedLetter.height() < 1500) {
                 Mat resizedLetter = resize(paintedLetter);
+                showWaitDestroy("resized",resizedLetter);
                 result.append(App.getLetter(resizedLetter, model));
             }
         }
@@ -363,6 +373,13 @@ public class Contour {
         }
         if (capitalizeFirst) closestWord = closestWord.substring(0, 1).toUpperCase() + closestWord.substring(1);
         return closestWord;
+    }
+
+    private static void showWaitDestroy(String winname, Mat img) {
+        /*HighGui.imshow(winname, img);
+        HighGui.moveWindow(winname, 500, 0);
+        HighGui.waitKey(0);
+        HighGui.destroyWindow(winname);*/
     }
 
 }

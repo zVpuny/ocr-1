@@ -104,12 +104,15 @@ public class Controller {
 
             document.setText(Contour.cropLines(document.getImage(), FXApp.model, useDictionary.isSelected()));
 
-            if (savePathTextField.getText() != null) {
+            if (savePathTextField.getText() != null && savePathTextField.getText().length()>3) {
                 FileUtils.write(new File(savePathTextField.getText() + "/file-" + i + ".txt"), document.getText());
                 i++;
             }
         }
-        resultText.setText(documents.get(0).getText());
+        if(!documents.isEmpty()){
+            resultText.setText(documents.get(0).getText());
+        }
+
 
     }
 
@@ -128,7 +131,9 @@ public class Controller {
             }
             filesTextField.setText(filesString.toString());
         }
-        srcImage.setImage(new Image(new FileInputStream(documents.get(0).getImage())));
+        if(!documents.isEmpty()){
+            srcImage.setImage(new Image(new FileInputStream(documents.get(0).getImage())));
+        }
         documentsIterator = documents.listIterator();
         if(documentsIterator.hasNext()){
             documentsIterator.next();
